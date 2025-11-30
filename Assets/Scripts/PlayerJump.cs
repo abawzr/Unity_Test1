@@ -6,8 +6,11 @@ public class PlayerJump : MonoBehaviour
     [SerializeField] private float groundSpherePositionOffset;
     [SerializeField] private float groundSphereRadius;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private AudioClip jumpClip;
+    [SerializeField] private AudioClip doubleJumpClip;
 
     private Rigidbody _rb;
+    private AudioSource _audioSource;
     private bool _isGrounded;
     private bool _canDoubleJump;
 
@@ -21,6 +24,7 @@ public class PlayerJump : MonoBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -38,6 +42,7 @@ public class PlayerJump : MonoBehaviour
         {
             // Add force to the player in Y axis
             _rb.AddForce(transform.up * jumpPower, ForceMode.Impulse);
+            _audioSource.PlayOneShot(jumpClip);
         }
 
         // Second jump: check if player pressed jump button and player is not grounded and can double jump
@@ -45,6 +50,7 @@ public class PlayerJump : MonoBehaviour
         {
             // Add force to the player in Y axis, and disable double jump so he can only jump twice
             _rb.AddForce(transform.up * jumpPower, ForceMode.Impulse);
+            _audioSource.PlayOneShot(doubleJumpClip);
             _canDoubleJump = false;
         }
     }
