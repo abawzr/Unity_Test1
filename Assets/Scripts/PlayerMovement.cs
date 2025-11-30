@@ -1,7 +1,10 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] private AudioSource footstepAudioSource;
+    [SerializeField] private AudioClip grassFootstepClip;
     [SerializeField] private float movementSpeed;
 
     private Rigidbody _rb;
@@ -12,6 +15,12 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+    }
+
+    private void Start()
+    {
+        // Start the coroutine of PlayFootstep
+        StartCoroutine(PlayFootstep());
     }
 
     private void Update()
@@ -33,5 +42,25 @@ public class PlayerMovement : MonoBehaviour
 
         // change the rigidbody velocity of player to the new movement direction, and leave Y axis same to let Unity handle the gravity;
         _rb.linearVelocity = new Vector3(_movementDirection.x, _rb.linearVelocity.y, _movementDirection.z);
+    }
+
+    private IEnumerator PlayFootstep()
+    {
+        // While true and never stops till the game stop
+        while (true)
+        {
+            // Check if player movement input not equal zero and player is grounded
+            if (_movementDirection != Vector3.zero && PlayerJump.IsGrounded)
+            {
+                // Use the reference of audio source and play grass footstep audio clip
+                footstepAudioSource.PlayOneShot(grassFootstepClip);
+
+                // Wait 0.7f seconds and then continue the loop
+                yield return new WaitForSeconds(0.7f);
+            }
+
+            // This line to ensure while loop stop in one frame, without using this line the game will crash
+            yield return null;
+        }
     }
 }

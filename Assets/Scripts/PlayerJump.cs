@@ -11,8 +11,9 @@ public class PlayerJump : MonoBehaviour
 
     private Rigidbody _rb;
     private AudioSource _audioSource;
-    private bool _isGrounded;
     private bool _canDoubleJump;
+
+    public static bool IsGrounded { get; private set; }
 
     private void OnDrawGizmos()
     {
@@ -32,13 +33,13 @@ public class PlayerJump : MonoBehaviour
         // Create an invisible sphere in player position and modify the position up and down by multiplying groundSpherePositionOffset,
         //  then modify the sphere radius,
         //  sphere return true only when collide with specific layer mask
-        _isGrounded = Physics.CheckSphere(transform.position + transform.up * groundSpherePositionOffset, groundSphereRadius, groundLayer);
+        IsGrounded = Physics.CheckSphere(transform.position + transform.up * groundSpherePositionOffset, groundSphereRadius, groundLayer);
 
         // If player is grounded > reset double jump
-        if (_isGrounded) _canDoubleJump = true;
+        if (IsGrounded) _canDoubleJump = true;
 
         // First jump: check if player pressed jump button and player is grounded
-        if (Input.GetButtonDown("Jump") && _isGrounded)
+        if (Input.GetButtonDown("Jump") && IsGrounded)
         {
             // Add force to the player in Y axis
             _rb.AddForce(transform.up * jumpPower, ForceMode.Impulse);
@@ -46,7 +47,7 @@ public class PlayerJump : MonoBehaviour
         }
 
         // Second jump: check if player pressed jump button and player is not grounded and can double jump
-        else if (Input.GetButtonDown("Jump") && !_isGrounded && _canDoubleJump)
+        else if (Input.GetButtonDown("Jump") && !IsGrounded && _canDoubleJump)
         {
             // Add force to the player in Y axis, and disable double jump so he can only jump twice
             _rb.AddForce(transform.up * jumpPower, ForceMode.Impulse);
